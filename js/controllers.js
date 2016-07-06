@@ -3,7 +3,14 @@ angular.module('songhop.controllers', ['ionic', 'songhop.services'])
 /*
 Controller for the discover page
 */
-.controller('DiscoverCtrl', function($scope, $timeout, User) {
+.controller('DiscoverCtrl', function($scope, $timeout, User, Recommendations) {
+  // get our first songs
+  Recommendations.getNextSongs()
+    .then(function(){
+      $scope.currentSong = Recommendations.queue[0];
+    });
+
+
   // our first three songs
   $scope.songs = [
      {
@@ -39,15 +46,15 @@ Controller for the discover page
      $scope.currentSong.rated = bool;
      $scope.currentSong.hide = true;
 
+     // prepare the next song
+     Recommendations.nextSong();
+
      $timeout(function(){
-
-       // set the current song to one of our three songs
-       var randomSong = Math.round(Math.random() * ($scope.songs.length - 1));
-
-       // update current song in scope
-       $scope.currentSong = angular.copy($scope.songs[randomSong]);
-
+       // $timeout to allow animation to complete
+       $scope.currentSong = Recommendations.queue[0];
      }, 250);
+
+
    }
 })
 
